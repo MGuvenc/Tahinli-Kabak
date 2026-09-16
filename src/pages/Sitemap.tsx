@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
 import { motion } from 'framer-motion';
-import { FileText, Image, User, Tag, Send, Home } from 'lucide-react';
+import { FileText, Tag, Home } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface SitemapSection {

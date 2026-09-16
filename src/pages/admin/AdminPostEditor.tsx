@@ -4,10 +4,9 @@ import { motion } from 'framer-motion';
 import { Save, Eye, ArrowLeft, Plus, Trash2, GripVertical } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/helpers';
-import { slugify, generateUniqueSlug, calculateReadingTime } from '@/lib/utils';
+import { generateUniqueSlug, calculateReadingTime } from '@/lib/utils';
 import ImageUpload from '@/components/ui/ImageUpload';
 
-type Post = Tables<'posts'>;
 type Tag = Tables<'tags'>;
 
 interface BlockData {
