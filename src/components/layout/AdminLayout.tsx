@@ -6,6 +6,7 @@ import {
   FileText,
   Image,
   MessageSquare,
+  MessageCircle,
   Inbox,
   Settings,
   LogOut,
@@ -32,6 +33,7 @@ const navItems: NavItem[] = [
 { href: '/admin/yazilar', label: 'Yazılar', icon: FileText },
 { href: '/admin/galeri', label: 'Galeri', icon: Image },
 { href: '/admin/yorumlar', label: 'Yorumlar', icon: MessageSquare, badgeKey: 'comments' },
+{ href: '/admin/sohbet', label: 'Sohbet', icon: MessageCircle },
 { href: '/admin/anonim-yazilar', label: 'Anonim Gönderiler', icon: Inbox, badgeKey: 'submissions' },
 { href: '/admin/ayarlar', label: 'Ayarlar', icon: Settings }];
 

@@ -17,6 +17,7 @@ import TagPosts from '@/pages/TagPosts';
 import Search from '@/pages/Search';
 import Sitemap from '@/pages/Sitemap';
 import NotFound from '@/pages/NotFound';
+import Chat from '@/pages/Chat';
 
 // Auth Pages
 import AdminLogin from '@/pages/admin/AdminLogin';
@@ -29,6 +30,7 @@ import AdminGallery from '@/pages/admin/AdminGallery';
 import AdminComments from '@/pages/admin/AdminComments';
 import AdminSubmissions from '@/pages/admin/AdminSubmissions';
 import AdminSettings from '@/pages/admin/AdminSettings';
+import AdminChat from '@/pages/admin/AdminChat';
 
 // Layouts
 import PublicLayout from '@/components/layout/PublicLayout';
@@ -48,6 +50,7 @@ export default function App() {
 				<Route path="/etiket/:slug" element={<TagPosts />} />
 				<Route path="/ara" element={<Search />} />
 				<Route path="/site-haritasi" element={<Sitemap />} />
+				<Route path="/sohbet" element={<Chat />} />
 			</Route>
 			
 			{/* Admin Auth */}
@@ -67,6 +70,7 @@ export default function App() {
 				<Route path="yorumlar" element={<AdminComments />} />
 				<Route path="anonim-yazilar" element={<AdminSubmissions />} />
 				<Route path="ayarlar" element={<AdminSettings />} />
+				<Route path="sohbet" element={<AdminChat />} />
 			</Route>
 			
 			{/* 404 */}

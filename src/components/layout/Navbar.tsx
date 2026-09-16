@@ -7,6 +7,7 @@ const navLinks = [
 { href: '/', label: 'Ana Sayfa' },
 { href: '/hakkimda', label: 'Hakkımda' },
 { href: '/galeri', label: 'Galeri' },
+{ href: '/sohbet', label: 'Sohbet' },
 { href: '/anonim-yazi-gonder', label: 'Anonim Yazı Gönder' }];
 
 
