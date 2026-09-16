@@ -1,0 +1,97 @@
+/**
+ * THEME CONFIGURATION Tailwind v4
+ * tahinlikabak blog theme - Green, White, Orange palette
+ */
+:root {
+	/* Brand Colors */
+	--color-tahini: #D4A574;
+	--color-tahini-dark: #B8956A;
+	--color-pumpkin: #E67E22;
+	--color-pumpkin-dark: #D35400;
+	--color-pumpkin-light: #F39C12;
+	
+	/* Greens - Natural/botanical feel */
+	--color-olive: #8FBC8F;
+	--color-olive-light: #A8D5A2;
+	--color-pine: #2D5A3D;
+	--color-pine-dark: #1E3D2A;
+	--color-sage: #9CAF88;
+	
+	/* Neutrals */
+	--color-cream: #FDF8F3;
+	--color-cream-dark: #F5EDE3;
+	--color-warm-white: #FFFAF5;
+	--color-warm-gray: #6B5B4F;
+	--color-warm-gray-light: #A39485;
+	
+	/* Semantic Colors */
+	--color-primary: var(--color-pine);
+	--color-primary-foreground: #FFFFFF;
+	
+	--color-secondary: var(--color-olive);
+	--color-secondary-foreground: var(--color-pine-dark);
+	
+	--color-accent: var(--color-pumpkin);
+	--color-accent-foreground: #FFFFFF;
+	
+	--color-destructive: #DC2626;
+	--color-destructive-foreground: #FFFFFF;
+	
+	--color-muted: var(--color-cream-dark);
+	--color-muted-foreground: var(--color-warm-gray);
+	
+	--color-background: var(--color-warm-white);
+	--color-foreground: var(--color-pine-dark);
+	
+	--color-card: #FFFFFF;
+	--color-card-foreground: var(--color-pine-dark);
+	
+	--color-border: #E8DFD5;
+	--color-input: #E8DFD5;
+	--color-ring: var(--color-pumpkin);
+	
+	/* Dark Mode Colors */
+	--color-dark-bg: #1A2F23;
+	--color-dark-card: #243B2D;
+	--color-dark-border: #3D5A47;
+	--color-dark-muted: #2D4536;
+	--color-dark-foreground: #F5EDE3;
+	
+	/* Radius */
+	--radius-sm: 0.5rem;
+	--radius-md: 0.75rem;
+	--radius-lg: 1rem;
+	--radius-xl: 1.5rem;
+	--radius-2xl: 2rem;
+	--radius-full: 9999px;
+	
+	/* Fonts */
+	--font-display: 'Baloo 2', 'Poppins', system-ui, sans-serif;
+	--font-sans: 'Nunito Sans', 'Inter', system-ui, sans-serif;
+	--font-mono: 'Fira Code', monospace;
+	
+	/* Shadows */
+	--shadow-soft: 0 4px 20px #0000000D;
+	--shadow-card: 0 8px 30px #0000001A;
+	--shadow-hover: 0 12px 40px #00000026;
+}
+
+.dark {
+	--color-background: var(--color-dark-bg);
+	--color-foreground: var(--color-dark-foreground);
+
+	--color-card: var(--color-dark-card);
+	--color-card-foreground: var(--color-dark-foreground);
+
+	--color-border: var(--color-dark-border);
+	--color-input: var(--color-dark-border);
+
+	--color-muted: var(--color-dark-muted);
+	--color-muted-foreground: var(--color-warm-gray-light);
+
+	--color-primary: var(--color-olive-light);
+	--color-primary-foreground: var(--color-dark-bg);
+
+	--color-secondary: var(--color-sage);
+	--color-secondary-foreground: var(--color-dark-foreground);
+}
