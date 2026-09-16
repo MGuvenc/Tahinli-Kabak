@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Check, X, Eye, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/helpers';
-import { formatDate, generateUniqueSlug } from '@/lib/utils';
+import { formatDate, generateUniqueSlug, markAsViewed } from '@/lib/utils';
 
 type Submission = Tables<'anonymous_submissions'>;
 
@@ -16,6 +16,7 @@ export default function AdminSubmissions() {
 
   useEffect(() => {
     fetchSubmissions();
+    markAsViewed('submissions');
   }, []);
 
   const fetchSubmissions = async () => {

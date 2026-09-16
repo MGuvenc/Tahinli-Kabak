@@ -243,3 +243,19 @@ export function getOrCreateVisitorName(): string {
   
   return visitorName;
 }
+
+const LAST_VIEWED_PREFIX = 'admin_last_viewed_';
+
+/**
+ * Bir admin sekmesinin (comments, submissions, chat) en son ne zaman görüntülendiği
+ */
+export function getLastViewed(section: string): string {
+	return localStorage.getItem(LAST_VIEWED_PREFIX + section) ?? '2026-01-01T00:00:00.000Z';
+}
+
+/**
+ * Admin, sekmeyi görüntüleyince güncelle
+ */
+export function markAsViewed(section: string): void {
+	localStorage.setItem(LAST_VIEWED_PREFIX + section, new Date().toISOString());
+}

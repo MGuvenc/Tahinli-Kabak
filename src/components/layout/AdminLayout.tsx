@@ -19,13 +19,14 @@ import {
 import { useTheme } from '@/hooks/useTheme';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
+import { getLastViewed } from '@/lib/utils';
 
 interface NavItem {
   href: string;
   label: string;
   icon: React.ComponentType<{className?: string;}>;
   exact?: boolean;
-  badgeKey?: 'submissions' | 'comments';
+  badgeKey?: 'submissions' | 'comments' | 'chat';
 }
 
 const navItems: NavItem[] = [
@@ -33,7 +34,7 @@ const navItems: NavItem[] = [
 { href: '/admin/yazilar', label: 'Yazılar', icon: FileText },
 { href: '/admin/galeri', label: 'Galeri', icon: Image },
 { href: '/admin/yorumlar', label: 'Yorumlar', icon: MessageSquare, badgeKey: 'comments' },
-{ href: '/admin/sohbet', label: 'Sohbet', icon: MessageCircle },
+{ href: '/admin/sohbet', label: 'Sohbet', icon: MessageCircle, badgeKey: 'chat' },
 { href: '/admin/anonim-yazilar', label: 'Anonim Gönderiler', icon: Inbox, badgeKey: 'submissions' },
 { href: '/admin/ayarlar', label: 'Ayarlar', icon: Settings }];
 
@@ -46,34 +47,40 @@ export default function AdminLayout() {
   const { user, signOut } = useAuth();
 
   // Notification badges
-  const [badges, setBadges] = useState<{submissions: number;comments: number;}>({
+  const [badges, setBadges] = useState<{submissions: number;comments: number;chat: number;}>({
     submissions: 0,
-    comments: 0
+    comments: 0,
+    chat: 0
   });
 
-  // Fetch notification counts
+  // Fetch notification counts - görüntülenmemiş olanlar
   useEffect(() => {
     if (!supabase) return;
 
     const fetchCounts = async () => {
-      // Pending anonymous submissions
+      // Pending anonymous submissions - sadece son görüntülemeden sonra gelenler
       const { count: submissionsCount } = await supabase.
       from('anonymous_submissions').
       select('*', { count: 'exact', head: true }).
-      eq('status', 'pending');
+      eq('status', 'pending').
+      gt('created_at', getLastViewed('submissions'));
 
-      // Recent comments (last 24 hours as "new")
-      const oneDayAgo = new Date();
-      oneDayAgo.setDate(oneDayAgo.getDate() - 1);
-
+      // Comments - son görüntülemeden sonra gelenler
       const { count: commentsCount } = await supabase.
       from('comments').
       select('*', { count: 'exact', head: true }).
-      gte('created_at', oneDayAgo.toISOString());
+      gt('created_at', getLastViewed('comments'));
+
+      // Chat mesajları - son görüntülemeden sonra gelenler
+      const { count: chatCount } = await supabase.
+      from('chat_messages').
+      select('*', { count: 'exact', head: true }).
+      gt('created_at', getLastViewed('chat'));
 
       setBadges({
         submissions: submissionsCount ?? 0,
-        comments: commentsCount ?? 0
+        comments: commentsCount ?? 0,
+        chat: chatCount ?? 0
       });
     };
 
@@ -90,11 +97,17 @@ export default function AdminLayout() {
     on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'comments' }, fetchCounts).
     subscribe();
 
+    const chatChannel = supabase.
+    channel('admin-chat-badge').
+    on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, fetchCounts).
+    subscribe();
+
     return () => {
       supabase.removeChannel(submissionsChannel);
       supabase.removeChannel(commentsChannel);
+      supabase.removeChannel(chatChannel);
     };
-  }, []);
+  }, [location.pathname]);
 
   const isActive = (href: string, exact?: boolean) => {
     if (exact) return location.pathname === href;
@@ -106,7 +119,7 @@ export default function AdminLayout() {
     navigate('/admin/giris');
   };
 
-  const getBadgeCount = (badgeKey?: 'submissions' | 'comments') => {
+  const getBadgeCount = (badgeKey?: 'submissions' | 'comments' | 'chat') => {
     if (!badgeKey) return 0;
     return badges[badgeKey];
   };
@@ -237,9 +250,9 @@ export default function AdminLayout() {
 
             <Menu className="w-6 h-6" />
             {/* Mobile badge indicator */}
-            {badges.submissions + badges.comments > 0 &&
+            {badges.submissions + badges.comments + badges.chat > 0 &&
             <span data-ev-id="ev_4197c22ed5" className="absolute -top-1 -right-1 w-4 h-4 bg-pumpkin rounded-full text-[10px] text-white flex items-center justify-center font-bold">
-                {badges.submissions + badges.comments > 9 ? '!' : badges.submissions + badges.comments}
+                {badges.submissions + badges.comments + badges.chat > 9 ? '!' : badges.submissions + badges.comments + badges.chat}
               </span>
             }
           </button>

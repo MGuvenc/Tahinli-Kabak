@@ -4,7 +4,7 @@ import { Trash2, MessageSquare, ExternalLink, User } from 'lucide-react';
 import { Link } from 'react-router';
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/helpers';
-import { formatDate } from '@/lib/utils';
+import { formatDate, markAsViewed } from '@/lib/utils';
 
 type Comment = Tables<'comments'> & {
   posts?: {title: string;slug: string;} | null;
@@ -16,6 +16,7 @@ export default function AdminComments() {
 
   useEffect(() => {
     fetchComments();
+    markAsViewed('comments');
   }, []);
 
   const fetchComments = async () => {
