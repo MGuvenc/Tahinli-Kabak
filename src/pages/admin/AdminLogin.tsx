@@ -63,7 +63,7 @@ export default function AdminLogin() {
         {/* Logo */}
         <div data-ev-id="ev_9835842b01" className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-4">
-            <span data-ev-id="ev_61ea460859" className="text-4xl">🥛🎃</span>
+            <span data-ev-id="ev_61ea460859" className="text-4xl">🍬🎃</span>
           </Link>
           <h1 data-ev-id="ev_ac9a9a5c60" className="font-display text-3xl font-bold text-pine">tahinlikabak</h1>
           <p data-ev-id="ev_28fbddfa4d" className="text-muted-foreground mt-2">Admin Paneli</p>

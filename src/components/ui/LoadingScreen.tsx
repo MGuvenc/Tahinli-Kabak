@@ -18,7 +18,7 @@ export default function LoadingScreen() {
             }}
             className="text-6xl">
 
-						🥛
+						🍬
 					</motion.span>
 					<motion.span
             animate={{

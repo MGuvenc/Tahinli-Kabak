@@ -60,7 +60,7 @@ export default function About() {
             className="w-48 h-48 rounded-full object-cover shadow-card" />
 
 								{/* Decorative elements */}
-								<div data-ev-id="ev_14f3a7439e" className="absolute -top-2 -right-2 text-4xl">🥛</div>
+								<div data-ev-id="ev_14f3a7439e" className="absolute -top-2 -right-2 text-4xl">🍬</div>
 								<div data-ev-id="ev_6372a6f401" className="absolute -bottom-2 -left-2 text-4xl">🎃</div>
 							</div> :
 

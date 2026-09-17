@@ -28,7 +28,7 @@ export default function NewsletterSection() {
         setStatus('error');
       }
     } else {
-      setMessage('Hoş geldin! Tahin damlası yolda 🥛');
+      setMessage('Hoş geldin! Tahin damlası yolda 🍬');
       setStatus('success');
       setEmail('');
 
@@ -51,7 +51,7 @@ export default function NewsletterSection() {
     <section data-ev-id="ev_1046582fab" id="newsletter" className="py-20 px-4 bg-pine text-cream relative overflow-hidden">
 			{/* Background decorations */}
 			<div data-ev-id="ev_9945a3439f" className="absolute inset-0 overflow-hidden pointer-events-none">
-				<div data-ev-id="ev_4bbf32a6df" className="absolute top-10 left-10 text-6xl opacity-10 rotate-12">🥛</div>
+				<div data-ev-id="ev_4bbf32a6df" className="absolute top-10 left-10 text-6xl opacity-10 rotate-12">🍬</div>
 				<div data-ev-id="ev_7af98e193b" className="absolute bottom-10 right-10 text-6xl opacity-10 -rotate-12">🎃</div>
 				<div data-ev-id="ev_01e321f8c2" className="absolute top-1/2 right-1/4 text-4xl opacity-10">✨</div>
 			</div>

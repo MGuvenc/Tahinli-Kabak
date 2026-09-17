@@ -151,7 +151,7 @@ export default function AdminLayout() {
           {/* Logo */}
           <div data-ev-id="ev_cea1e1708e" className="flex items-center justify-between p-4 border-b border-border">
             <Link to="/admin" className="flex items-center gap-2">
-              <span data-ev-id="ev_601340e8a8" className="text-2xl">🥛🎃</span>
+              <span data-ev-id="ev_601340e8a8" className="text-2xl">🍬🎃</span>
               <span data-ev-id="ev_edcdbc6414" className="font-display font-bold text-pine">tahinlikabak</span>
             </Link>
             <button data-ev-id="ev_a42eb90eda"
@@ -259,7 +259,7 @@ export default function AdminLayout() {
             }
           </button>
           <Link to="/admin" className="flex items-center gap-2">
-            <span data-ev-id="ev_ed6f3312c5" className="text-xl">🥛🎃</span>
+            <span data-ev-id="ev_ed6f3312c5" className="text-xl">🍬🎃</span>
             <span data-ev-id="ev_511e320486" className="font-display font-bold text-pine">Admin</span>
           </Link>
           <button data-ev-id="ev_99e56ae769"
