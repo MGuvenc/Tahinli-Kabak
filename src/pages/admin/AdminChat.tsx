@@ -64,9 +64,14 @@ export default function AdminChat() {
 
 	const bannedVisitorIds = new Set(bannedVisitors.map((b) => b.visitor_id));
 
-	const handleDeleteMessage = async (id: string) => {
+		const handleDeleteMessage = async (id: string) => {
 		if (!supabase) return;
-		await supabase.from('chat_messages').delete().eq('id', id);
+		const { error } = await supabase.from('chat_messages').delete().eq('id', id);
+		if (error) {
+			alert('Mesaj silinemedi: ' + error.message);
+			return;
+		}
+		setMessages((prev) => prev.filter((m) => m.id !== id));
 	};
 
 	const handleBanUser = async (visitorId: string, username: string) => {
@@ -74,15 +79,30 @@ export default function AdminChat() {
 		if (!confirm(`"${username}" adlı kullanıcıyı banlamak istediğine emin misin? Bu kullanıcı artık mesaj gönderemeyecek.`)) {
 			return;
 		}
-		await supabase.from('banned_visitors').insert({
-			visitor_id: visitorId,
-			reason: `"${username}" kullanıcı adıyla banlandı`,
-		});
+		const { data, error } = await supabase
+			.from('banned_visitors')
+			.insert({
+				visitor_id: visitorId,
+				reason: `"${username}" kullanıcı adıyla banlandı`,
+			})
+			.select()
+			.single();
+
+		if (error) {
+			alert('Kullanıcı banlanamadı: ' + error.message);
+			return;
+		}
+		setBannedVisitors((prev) => [data, ...prev]);
 	};
 
 	const handleUnban = async (id: string) => {
 		if (!supabase) return;
-		await supabase.from('banned_visitors').delete().eq('id', id);
+		const { error } = await supabase.from('banned_visitors').delete().eq('id', id);
+		if (error) {
+			alert('Ban kaldırılamadı: ' + error.message);
+			return;
+		}
+		setBannedVisitors((prev) => prev.filter((b) => b.id !== id));
 	};
 
 	if (loading) {
