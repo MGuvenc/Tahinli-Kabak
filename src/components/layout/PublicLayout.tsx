@@ -2,6 +2,7 @@ import { Outlet } from 'react-router';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import CookieBanner from '@/components/ui/CookieBanner';
+import ScrollToTop from '../ui/Scrolltotop';
 
 export default function PublicLayout() {
   return (
@@ -12,6 +13,7 @@ export default function PublicLayout() {
 			</main>
 			<Footer />
 			<CookieBanner />
+			<ScrollToTop />
 		</div>);
 
 }
