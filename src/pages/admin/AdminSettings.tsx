@@ -1,11 +1,22 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Save, Globe, Palette, Lock } from 'lucide-react';
+import { Save, Globe, Palette, Lock, Plus, Trash2, GripVertical } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/helpers';
 import { useAuth } from '@/hooks/useAuth';
+import ImageUpload from '@/components/ui/ImageUpload';
 
 type SiteSetting = Tables<'site_settings'>;
+
+interface AboutBlockData {
+  id: string;
+  block_type: string;
+  content: string;
+  image_url: string;
+  image_alt: string;
+  layout: string;
+  sort_order: number;
+}
 
 export default function AdminSettings() {
   const { user } = useAuth();
@@ -24,6 +35,7 @@ export default function AdminSettings() {
   const [siteTitle, setSiteTitle] = useState('');
   const [footerText, setFooterText] = useState('');
   const [aboutContent, setAboutContent] = useState('');
+    const [aboutBlocks, setAboutBlocks] = useState<AboutBlockData[]>([]);
   const [aboutImageUrl, setAboutImageUrl] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
 
@@ -52,7 +64,52 @@ export default function AdminSettings() {
       setLogoUrl(data.logo_url ?? '');
     }
 
+    const { data: blocksData } = await supabase.
+    from('about_blocks').
+    select('*').
+    order('sort_order');
+
+    setAboutBlocks(
+      (blocksData ?? []).map((b) => ({
+        id: b.id,
+        block_type: b.block_type,
+        content: b.content ?? '',
+        image_url: b.image_url ?? '',
+        image_alt: b.image_alt ?? '',
+        layout: b.layout ?? 'full',
+        sort_order: b.sort_order
+      }))
+    );
+
     setLoading(false);
+  };
+
+    const addAboutBlock = (type: string) => {
+    setAboutBlocks([...aboutBlocks, {
+      id: `new-${Date.now()}`,
+      block_type: type,
+      content: '',
+      image_url: '',
+      image_alt: '',
+      layout: 'full',
+      sort_order: aboutBlocks.length
+    }]);
+  };
+
+  const updateAboutBlock = (blockId: string, updates: Partial<AboutBlockData>) => {
+    setAboutBlocks(aboutBlocks.map((b) => b.id === blockId ? { ...b, ...updates } : b));
+  };
+
+  const removeAboutBlock = (blockId: string) => {
+    setAboutBlocks(aboutBlocks.filter((b) => b.id !== blockId));
+  };
+
+  const moveAboutBlock = (index: number, direction: 'up' | 'down') => {
+    const newBlocks = [...aboutBlocks];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= aboutBlocks.length) return;
+    [newBlocks[index], newBlocks[targetIndex]] = [newBlocks[targetIndex], newBlocks[index]];
+    setAboutBlocks(newBlocks.map((b, i) => ({ ...b, sort_order: i })));
   };
 
   const handleSave = async () => {
@@ -63,13 +120,11 @@ export default function AdminSettings() {
     const updates = {
       site_title: siteTitle,
       footer_text: footerText,
-      about_content: aboutContent,
       about_image_url: aboutImageUrl || null,
       logo_url: logoUrl || null
     };
 
     if (settings) {
-      // Update existing
       const { error } = await supabase.
       from('site_settings').
       update(updates).
@@ -79,7 +134,6 @@ export default function AdminSettings() {
         alert('Ayarlar kaydedilemedi: ' + error.message);
       }
     } else {
-      // Create new
       const { error } = await supabase.
       from('site_settings').
       insert(updates);
@@ -87,6 +141,20 @@ export default function AdminSettings() {
       if (error) {
         alert('Ayarlar oluşturulamadı: ' + error.message);
       }
+    }
+
+    // Hakkımda bloklarını kaydet
+    await supabase.from('about_blocks').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    if (aboutBlocks.length > 0) {
+      const blocksToInsert = aboutBlocks.map((b, i) => ({
+        block_type: b.block_type,
+        content: b.content || null,
+        image_url: b.image_url || null,
+        image_alt: b.image_alt || null,
+        layout: b.layout,
+        sort_order: i
+      }));
+      await supabase.from('about_blocks').insert(blocksToInsert);
     }
 
     setSaving(false);
@@ -224,14 +292,79 @@ export default function AdminSettings() {
               }
             </div>
             <div data-ev-id="ev_6ced1d5284">
-              <label data-ev-id="ev_25e514b0fc" className="block text-sm font-medium mb-1">Hakkımda İçeriği</label>
-              <textarea data-ev-id="ev_759500eecc"
-              value={aboutContent}
-              onChange={(e) => setAboutContent(e.target.value)}
-              rows={6}
-              className="w-full px-3 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-pumpkin resize-none"
-              placeholder="Merhaba! Ben..." />
+              <label className="block text-sm font-medium mb-2">Hakkımda İçeriği</label>
 
+              {aboutBlocks.length > 0 && (
+                <div className="flex flex-col gap-4 mb-4">
+                  {aboutBlocks.map((block, index) => (
+                    <div key={block.id} className="border border-border rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <GripVertical className="w-4 h-4 text-muted-foreground cursor-move" />
+                          <span className="text-sm font-medium capitalize">
+                            {block.block_type === 'text' ? 'Metin' : block.block_type === 'image' ? 'Görsel' : 'Alıntı'}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <button onClick={() => moveAboutBlock(index, 'up')} disabled={index === 0} className="p-1 text-muted-foreground hover:text-foreground disabled:opacity-30">↑</button>
+                          <button onClick={() => moveAboutBlock(index, 'down')} disabled={index === aboutBlocks.length - 1} className="p-1 text-muted-foreground hover:text-foreground disabled:opacity-30">↓</button>
+                          <button onClick={() => removeAboutBlock(block.id)} className="p-1 text-destructive hover:text-destructive/80"><Trash2 className="w-4 h-4" /></button>
+                        </div>
+                      </div>
+
+                      {block.block_type === 'text' && (
+                        <textarea
+                          value={block.content}
+                          onChange={(e) => updateAboutBlock(block.id, { content: e.target.value })}
+                          rows={5}
+                          className="w-full px-3 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-pumpkin resize-none"
+                          placeholder="Metin içeriği..." />
+                      )}
+
+                      {block.block_type === 'image' && (
+                        <div className="flex flex-col gap-3">
+                          <ImageUpload value={block.image_url} onChange={(url) => updateAboutBlock(block.id, { image_url: url })} folder="about" />
+                          <input
+                            type="text"
+                            value={block.image_alt}
+                            onChange={(e) => updateAboutBlock(block.id, { image_alt: e.target.value })}
+                            className="w-full px-3 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-pumpkin"
+                            placeholder="Görsel açıklaması (alt text)" />
+                          <select
+                            value={block.layout}
+                            onChange={(e) => updateAboutBlock(block.id, { layout: e.target.value })}
+                            className="px-3 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-pumpkin">
+                            <option value="full">Tam genişlik</option>
+                            <option value="image-left">Görsel solda</option>
+                            <option value="image-right">Görsel sağda</option>
+                          </select>
+                        </div>
+                      )}
+
+                      {block.block_type === 'quote' && (
+                        <textarea
+                          value={block.content}
+                          onChange={(e) => updateAboutBlock(block.id, { content: e.target.value })}
+                          rows={3}
+                          className="w-full px-3 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-pumpkin resize-none italic"
+                          placeholder="Alıntı metni..." />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex flex-wrap gap-2">
+                <button onClick={() => addAboutBlock('text')} className="flex items-center gap-2 px-3 py-2 bg-muted hover:bg-muted/80 rounded-lg text-sm transition-colors">
+                  <Plus className="w-4 h-4" /> Metin
+                </button>
+                <button onClick={() => addAboutBlock('image')} className="flex items-center gap-2 px-3 py-2 bg-muted hover:bg-muted/80 rounded-lg text-sm transition-colors">
+                  <Plus className="w-4 h-4" /> Görsel
+                </button>
+                <button onClick={() => addAboutBlock('quote')} className="flex items-center gap-2 px-3 py-2 bg-muted hover:bg-muted/80 rounded-lg text-sm transition-colors">
+                  <Plus className="w-4 h-4" /> Alıntı
+                </button>
+              </div>
             </div>
           </div>
         </motion.div>

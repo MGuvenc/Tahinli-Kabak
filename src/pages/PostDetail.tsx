@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useVisitorId } from '@/hooks/useVisitorId';
 import { formatDate } from '@/lib/utils';
 import type { Tables } from '@/integrations/supabase/helpers';
+import { ContentBlock } from '@/components/ui/ContentBlockRenderer';
 
 type Post = Tables<'posts'>;
 type PostBlock = Tables<'post_blocks'>;
@@ -261,52 +262,4 @@ export default function PostDetail() {
 			</article>
 		</>);
 
-}
-
-// Content block renderer
-function ContentBlock({ block }: {block: PostBlock;}) {
-  switch (block.block_type) {
-    case 'text':
-      return (
-        <div data-ev-id="ev_fc8969c756"
-        className="mb-6 text-foreground"
-        dangerouslySetInnerHTML={{ __html: block.content || '' }} />);
-
-
-    case 'image':
-      return (
-        <figure data-ev-id="ev_5df2ba732d" className={`mb-6 ${getLayoutClass(block.layout)}`}>
-					<img data-ev-id="ev_d72a7c0a5d"
-          src={block.image_url || ''}
-          alt={block.image_alt || ''}
-          className="rounded-xl w-full"
-          loading="lazy" />
-
-					{block.image_alt &&
-          <figcaption data-ev-id="ev_c3e61c424f" className="text-sm text-muted-foreground text-center mt-2">
-							{block.image_alt}
-						</figcaption>
-          }
-				</figure>);
-
-    case 'quote':
-      return (
-        <blockquote data-ev-id="ev_f4b37157e6" className="mb-6 pl-6 border-l-4 border-pumpkin italic text-muted-foreground">
-					{block.content}
-				</blockquote>);
-
-    default:
-      return null;
-  }
-}
-
-function getLayoutClass(layout: string | null): string {
-  switch (layout) {
-    case 'image-left':
-      return 'float-left mr-6 w-1/2';
-    case 'image-right':
-      return 'float-right ml-6 w-1/2';
-    default:
-      return '';
-  }
 }

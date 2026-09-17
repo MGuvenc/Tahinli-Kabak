@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/helpers';
+import { ContentBlock } from '@/components/ui/ContentBlockRenderer';
 
 type SiteSettings = Tables<'site_settings'>;
 
 export default function About() {
   const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [loading, setLoading] = useState(true);
+  const [blocks, setBlocks] = useState<any[]>([]);
 
   useEffect(() => {
     if (!supabase) {
@@ -22,6 +24,12 @@ export default function About() {
       single();
 
       setSettings(data);
+      const { data: blocksData } = await supabase.
+      from('about_blocks').
+      select('*').
+      order('sort_order');
+
+      setBlocks(blocksData ?? []);
       setLoading(false);
     };
 
@@ -70,26 +78,19 @@ export default function About() {
           }
 
 						{/* Content */}
-						<div data-ev-id="ev_f6b4f8d004" className="prose prose-lg max-w-none text-center">
-							{settings?.about_content ?
-            <div data-ev-id="ev_9088376759"
-            className="text-foreground whitespace-pre-wrap"
-            dangerouslySetInnerHTML={{ __html: settings.about_content }} /> :
-
-
-            <div data-ev-id="ev_35a055ea6a" className="bg-card rounded-2xl p-8">
+						<div data-ev-id="ev_f6b4f8d004" className="prose prose-lg max-w-none">
+							{blocks.length > 0 ? (
+								blocks.map((block) => <ContentBlock key={block.id} block={block} />)
+							) : (
+								<div data-ev-id="ev_35a055ea6a" className="bg-card rounded-2xl p-8 text-center">
 									<p data-ev-id="ev_23f236d18b" className="text-muted-foreground mb-4">
 										Merhaba! Ben <span data-ev-id="ev_c108eaaeca" className="text-pumpkin font-semibold">tahinlikabak</span>'in arkasindaki kişiyim.
-									</p>
-									<p data-ev-id="ev_2c8607f9aa" className="text-muted-foreground mb-4">
-										Bu blog, hayatın tatlı-tuzlu karışımını paylaşmak için kuruldu. 
-										Tahin gibi yayılan düşünceler, kabak gibi şaşırtan hikayeler...
 									</p>
 									<p data-ev-id="ev_565061ee2b" className="text-sm text-muted-foreground/70 italic">
 										(Bu içerik admin panelinden düzenlenebilir)
 									</p>
 								</div>
-            }
+							)}
 						</div>
 
 						{/* Fun fact */}
