@@ -1,16 +1,24 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Save, Globe, Palette } from 'lucide-react';
+import { Save, Globe, Palette, Lock } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/helpers';
+import { useAuth } from '@/hooks/useAuth';
 
 type SiteSetting = Tables<'site_settings'>;
 
 export default function AdminSettings() {
+  const { user } = useAuth();
   const [settings, setSettings] = useState<SiteSetting | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  // Şifre değiştirme
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [passwordMessage, setPasswordMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Form fields
   const [siteTitle, setSiteTitle] = useState('');
@@ -84,6 +92,33 @@ export default function AdminSettings() {
     setSaving(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
+  };
+  
+    const handleChangePassword = async () => {
+    if (!supabase) return;
+    setPasswordMessage(null);
+
+    if (newPassword.length < 6) {
+      setPasswordMessage({ type: 'error', text: 'Şifre en az 6 karakter olmalı.' });
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordMessage({ type: 'error', text: 'Şifreler eşleşmiyor.' });
+      return;
+    }
+
+    setChangingPassword(true);
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    setChangingPassword(false);
+
+    if (error) {
+      setPasswordMessage({ type: 'error', text: 'Şifre değiştirilemedi: ' + error.message });
+      return;
+    }
+
+    setPasswordMessage({ type: 'success', text: 'Şifren başarıyla değiştirildi ✓' });
+    setNewPassword('');
+    setConfirmPassword('');
   };
 
   if (loading) {
@@ -199,6 +234,60 @@ export default function AdminSettings() {
 
             </div>
           </div>
+        </motion.div>
+        
+        {/* Account Security */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-card rounded-xl p-6 shadow-soft">
+
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-pumpkin/10 rounded-lg">
+              <Lock className="w-5 h-5 text-pumpkin" />
+            </div>
+            <h2 className="font-display text-lg font-bold text-pine">Hesap Güvenliği</h2>
+          </div>
+
+          <p className="text-sm text-muted-foreground mb-4">
+            Giriş yapan hesap: <span className="font-medium text-foreground">{user?.email}</span>
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Yeni Şifre</label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="w-full px-3 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-pumpkin"
+                placeholder="En az 6 karakter" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Yeni Şifre (Tekrar)</label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full px-3 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-pumpkin"
+                placeholder="Şifreyi tekrar yaz" />
+            </div>
+          </div>
+
+          {passwordMessage && (
+            <p className={`text-sm mb-4 ${passwordMessage.type === 'success' ? 'text-green-600' : 'text-destructive'}`}>
+              {passwordMessage.text}
+            </p>
+          )}
+
+          <button
+            onClick={handleChangePassword}
+            disabled={changingPassword || !newPassword || !confirmPassword}
+            className="flex items-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 rounded-lg text-sm font-medium transition-colors disabled:opacity-50">
+            <Lock className="w-4 h-4" />
+            {changingPassword ? 'Değiştiriliyor...' : 'Şifreyi Değiştir'}
+          </button>
         </motion.div>
 
         {/* Info Card */}
