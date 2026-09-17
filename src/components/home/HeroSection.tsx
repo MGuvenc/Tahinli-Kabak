@@ -30,7 +30,7 @@ export default function HeroSection() {
             animate={{ rotate: [-5, 5, -5] }}
             transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}>
 
-              🍭
+              🍬
             </motion.span>
             <motion.div data-ev-id="ev_893bab004b"
             animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
