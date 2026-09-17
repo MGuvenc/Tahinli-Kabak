@@ -24,20 +24,6 @@ export default function HeroSection() {
           initial={{ scale: 0.8 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}>
-
-            <motion.span data-ev-id="ev_a5a7e56727"
-            className="text-6xl md:text-7xl"
-            animate={{ rotate: [-5, 5, -5] }}
-            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}>
-
-              🥛
-            </motion.span>
-            <motion.div data-ev-id="ev_893bab004b"
-            animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}>
-
-              <Sparkles className="w-8 h-8 text-pumpkin" />
-            </motion.div>
             <motion.span data-ev-id="ev_9f786db65c"
             className="text-6xl md:text-7xl"
             animate={{ rotate: [5, -5, 5] }}
