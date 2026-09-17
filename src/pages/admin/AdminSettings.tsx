@@ -34,8 +34,7 @@ export default function AdminSettings() {
   // Form fields
   const [siteTitle, setSiteTitle] = useState('');
   const [footerText, setFooterText] = useState('');
-  const [aboutContent, setAboutContent] = useState('');
-    const [aboutBlocks, setAboutBlocks] = useState<AboutBlockData[]>([]);
+  const [aboutBlocks, setAboutBlocks] = useState<AboutBlockData[]>([]);
   const [aboutImageUrl, setAboutImageUrl] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
 
@@ -59,7 +58,6 @@ export default function AdminSettings() {
       setSettings(data);
       setSiteTitle(data.site_title ?? '');
       setFooterText(data.footer_text ?? '');
-      setAboutContent(data.about_content ?? '');
       setAboutImageUrl(data.about_image_url ?? '');
       setLogoUrl(data.logo_url ?? '');
     }
