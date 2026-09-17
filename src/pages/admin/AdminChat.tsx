@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Trash2, Ban, ShieldOff, MessageCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { formatDate } from '@/lib/utils';
+import { formatDate, markAsViewed } from '@/lib/utils';
+import Chat from '../Chat';
 
 interface ChatMessage {
 	id: string;
@@ -46,6 +47,7 @@ export default function AdminChat() {
 	};
 
 	useEffect(() => {
+		markAsViewed('Chat');
 		fetchData();
 
 		if (!supabase) return;

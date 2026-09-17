@@ -258,4 +258,5 @@ export function getLastViewed(section: string): string {
  */
 export function markAsViewed(section: string): void {
 	localStorage.setItem(LAST_VIEWED_PREFIX + section, new Date().toISOString());
+	window.dispatchEvent(new Event('admin-badge-refresh'));
 }

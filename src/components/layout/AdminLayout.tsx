@@ -102,12 +102,14 @@ export default function AdminLayout() {
     on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, fetchCounts).
     subscribe();
 
+    window.addEventListener('admin-badge-refresh', fetchCounts);
+
     return () => {
       supabase.removeChannel(submissionsChannel);
       supabase.removeChannel(commentsChannel);
       supabase.removeChannel(chatChannel);
     };
-  }, [location.pathname]);
+  }, []);
 
   const isActive = (href: string, exact?: boolean) => {
     if (exact) return location.pathname === href;
