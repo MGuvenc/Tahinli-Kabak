@@ -9,6 +9,7 @@ const MAX_MESSAGE_LENGTH = 500;
 const MAX_USERNAME_LENGTH = 24;
 const SEND_COOLDOWN_MS = 3000;
 const MAX_IMAGE_SIZE_MB = 5;
+const PAGE_SIZE = 100;
 
 interface ChatMessage {
 	id: string;
@@ -26,6 +27,8 @@ export default function Chat() {
 	const [usernameInput, setUsernameInput] = useState('');
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	const [loading, setLoading] = useState(true);
+	const [loadingOlder, setLoadingOlder] = useState(false);
+	const [hasMore, setHasMore] = useState(true);
 	const [text, setText] = useState('');
 	const [sending, setSending] = useState(false);
 	const [uploadingImage, setUploadingImage] = useState(false);
@@ -35,29 +38,34 @@ export default function Chat() {
 	// Honeypot - botlar bu alanı doldurur, insanlar görmez
 	const [honeypot, setHoneypot] = useState('');
 
-	const messagesEndRef = useRef<HTMLDivElement>(null);
+	const containerRef = useRef<HTMLDivElement>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
+	const lastMessageIdRef = useRef<string | null>(null);
+	const didInitialScrollRef = useRef(false);
 
 	useEffect(() => {
 		const saved = localStorage.getItem(CHAT_USERNAME_KEY);
 		if (saved) setUsername(saved);
 	}, []);
 
+	// İlk 100 mesajı yükle (en yeniden en eskiye çekip, ekranda eskiden yeniye sırala)
 	useEffect(() => {
 		if (!supabase) return;
 
-		const fetchMessages = async () => {
+		const fetchInitialMessages = async () => {
 			const { data } = await supabase
 				.from('chat_messages')
 				.select('*')
-				.order('created_at', { ascending: true })
-				.limit(200);
+				.order('created_at', { ascending: false })
+				.limit(PAGE_SIZE);
 
-			setMessages(data ?? []);
+			const ordered = (data ?? []).slice().reverse();
+			setMessages(ordered);
+			setHasMore((data ?? []).length === PAGE_SIZE);
 			setLoading(false);
 		};
 
-		fetchMessages();
+		fetchInitialMessages();
 
 		const channel = supabase
 			.channel('public-chat')
@@ -82,9 +90,75 @@ export default function Chat() {
 		};
 	}, []);
 
+	// İlk yükleme bittiğinde SADECE mesaj kutusunun içini en alta kaydır
+	// (window/sayfa scroll'una hiç dokunmaz, footer'a atlama sorununu çözer)
 	useEffect(() => {
-		messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+		if (!loading && !didInitialScrollRef.current && containerRef.current) {
+			containerRef.current.scrollTop = containerRef.current.scrollHeight;
+			didInitialScrollRef.current = true;
+			if (messages.length > 0) {
+				lastMessageIdRef.current = messages[messages.length - 1].id;
+			}
+		}
+	}, [loading, messages]);
+
+	// Yeni mesaj sona eklendiğinde (realtime), sadece kutunun içini yumuşakça en alta kaydır
+	useEffect(() => {
+		if (!didInitialScrollRef.current || messages.length === 0) return;
+
+		const currentLastId = messages[messages.length - 1].id;
+		if (lastMessageIdRef.current !== currentLastId) {
+			const container = containerRef.current;
+			if (container) {
+				const nearBottom =
+					container.scrollHeight - container.scrollTop - container.clientHeight < 150;
+				if (nearBottom) {
+					container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+				}
+			}
+			lastMessageIdRef.current = currentLastId;
+		}
 	}, [messages]);
+
+	// Yukarı kaydırınca eski mesajları yükle, scroll konumunu koru
+	const loadOlderMessages = async () => {
+		if (!supabase || loadingOlder || !hasMore || messages.length === 0) return;
+
+		setLoadingOlder(true);
+		const oldest = messages[0];
+		const container = containerRef.current;
+		const prevScrollHeight = container?.scrollHeight ?? 0;
+
+		const { data } = await supabase
+			.from('chat_messages')
+			.select('*')
+			.lt('created_at', oldest.created_at)
+			.order('created_at', { ascending: false })
+			.limit(PAGE_SIZE);
+
+		const older = (data ?? []).slice().reverse();
+
+		setMessages((prev) => [...older, ...prev]);
+		setHasMore(older.length === PAGE_SIZE);
+
+		// Yeni mesajlar eklenince kullanıcı olduğu yerde kalsın (yukarı fırlamasın)
+		requestAnimationFrame(() => {
+			if (container) {
+				const newScrollHeight = container.scrollHeight;
+				container.scrollTop = newScrollHeight - prevScrollHeight;
+			}
+		});
+
+		setLoadingOlder(false);
+	};
+
+	const handleScroll = () => {
+		const container = containerRef.current;
+		if (!container) return;
+		if (container.scrollTop < 60) {
+			loadOlderMessages();
+		}
+	};
 
 	const handleSetUsername = () => {
 		const trimmed = usernameInput.trim().slice(0, MAX_USERNAME_LENGTH);
@@ -210,7 +284,17 @@ export default function Chat() {
 			</div>
 
 			{/* Messages */}
-			<div className="flex-1 overflow-y-auto bg-card rounded-xl p-4 shadow-soft mb-4 flex flex-col gap-3">
+			<div
+				ref={containerRef}
+				onScroll={handleScroll}
+				className="flex-1 overflow-y-auto bg-card rounded-xl p-4 shadow-soft mb-4 flex flex-col gap-3"
+			>
+				{loadingOlder && (
+					<p className="text-center text-xs text-muted-foreground py-2">
+						Daha eski mesajlar yükleniyor...
+					</p>
+				)}
+
 				{loading ? (
 					<div className="flex-1 flex items-center justify-center">
 						<div className="animate-spin w-6 h-6 border-4 border-pumpkin border-t-transparent rounded-full" />
@@ -252,7 +336,6 @@ export default function Chat() {
 						})}
 					</AnimatePresence>
 				)}
-				<div ref={messagesEndRef} />
 			</div>
 
 			{error && (
