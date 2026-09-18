@@ -273,22 +273,12 @@ export default function AdminSettings() {
 
           <div data-ev-id="ev_4b891e4979" className="flex flex-col gap-4">
             <div data-ev-id="ev_ff746d931d">
-              <label data-ev-id="ev_589ae47bd0" className="block text-sm font-medium mb-1">Hakkımda Görseli URL</label>
-              <input data-ev-id="ev_2d72be0f70"
-              type="url"
-              value={aboutImageUrl}
-              onChange={(e) => setAboutImageUrl(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-pumpkin"
-              placeholder="https://..." />
-
-              {aboutImageUrl &&
-              <img data-ev-id="ev_c8c30b61b5"
-              src={aboutImageUrl}
-              alt="Hakkımda görseli"
-              className="mt-2 w-32 h-32 object-cover rounded-lg" />
-
-              }
-            </div>
+                <label className="block text-sm font-medium mb-2">Hakkımda Görseli</label>
+                <ImageUpload
+                  value={aboutImageUrl}
+                  onChange={setAboutImageUrl}
+                  folder="about" />
+              </div>
             <div data-ev-id="ev_6ced1d5284">
               <label className="block text-sm font-medium mb-2">Hakkımda İçeriği</label>
 
