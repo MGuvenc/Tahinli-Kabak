@@ -21,7 +21,9 @@ export default function About() {
       const { data } = await supabase.
       from('site_settings').
       select('*').
-      single();
+      order('created_at', { ascending: true }).
+      limit(1).
+      maybeSingle();
 
       setSettings(data);
       const { data: blocksData } = await supabase.
