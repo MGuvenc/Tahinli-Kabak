@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { Link } from 'react-router';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { Heart, Clock, Eye } from 'lucide-react';
+import { Heart, Clock, Eye, MessageCircle } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/helpers';
 
 type Post = Tables<'posts'>;
@@ -11,9 +11,10 @@ interface PostCardProps {
   post: Post;
   variant?: 'default' | 'featured' | 'compact';
   index?: number;
+  commentCount?: number;
 }
 
-export default function PostCard({ post, variant = 'default', index = 0 }: PostCardProps) {
+export default function PostCard({ post, variant = 'default', index = 0, commentCount }: PostCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -138,6 +139,12 @@ export default function PostCard({ post, variant = 'default', index = 0 }: PostC
 							<Eye className="w-3.5 h-3.5" />
 							{post.view_count}
 						</span>
+            {commentCount !== undefined && (
+							<span className="flex items-center gap-1">
+								<MessageCircle className="w-3.5 h-3.5" />
+								{commentCount}
+							</span>
+            )}
 					</div>
 
 					{/* Date */}

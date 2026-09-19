@@ -19,6 +19,7 @@ export default function Home() {
   const [anonymousPosts, setAnonymousPosts] = useState<Post[]>([]);
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
   const [loading, setLoading] = useState(true);
+  const [commentCounts, setCommentCounts] = useState<Map<string, number>>(new Map());
 
   useEffect(() => {
     if (!supabase) {
@@ -62,6 +63,27 @@ export default function Home() {
       setLatestPosts(latest ?? []);
       setPopularPosts(popular ?? []);
       setAnonymousPosts(anonymous ?? []);
+      
+      // Yorum sayılarını hesapla
+      const allPostIds = [
+        ...(latest ?? []).map((p) => p.id),
+        ...(popular ?? []).map((p) => p.id),
+        ...(anonymous ?? []).map((p) => p.id)
+      ];
+      const uniquePostIds = [...new Set(allPostIds)];
+
+      if (uniquePostIds.length > 0) {
+        const { data: commentsData } = await supabase.
+        from('comments').
+        select('post_id').
+        in('post_id', uniquePostIds);
+
+        const countMap = new Map<string, number>();
+        (commentsData ?? []).forEach((c) => {
+          countMap.set(c.post_id, (countMap.get(c.post_id) ?? 0) + 1);
+        });
+        setCommentCounts(countMap);
+      }
       setGalleryImages(gallery ?? []);
       setLoading(false);
     };
@@ -97,7 +119,8 @@ export default function Home() {
               key={post.id}
               post={post}
               index={index}
-              variant={index === 0 ? 'featured' : 'default'} />
+              variant={index === 0 ? 'featured' : 'default'}
+              commentCount={commentCounts.get(post.id) ?? 0} />
 
             )}
 						</div> :
@@ -129,7 +152,8 @@ export default function Home() {
           popularPosts.length > 0 ?
           <div data-ev-id="ev_b2a2e766d2" className="grid grid-cols-1 md:grid-cols-2 gap-6">
 							{popularPosts.map((post, index) =>
-            <PostCard key={post.id} post={post} index={index} />
+            <PostCard key={post.id} post={post} index={index}
+              commentCount={commentCounts.get(post.id) ?? 0} />
             )}
 						</div> :
 
@@ -160,7 +184,8 @@ export default function Home() {
           anonymousPosts.length > 0 ?
           <div data-ev-id="ev_5e10f033f6" className="grid grid-cols-1 md:grid-cols-3 gap-6">
 							{anonymousPosts.map((post, index) =>
-            <PostCard key={post.id} post={post} index={index} />
+            <PostCard key={post.id} post={post} index={index}
+              commentCount={commentCounts.get(post.id) ?? 0} />
             )}
 						</div> :
 
