@@ -6,6 +6,8 @@
  * - Import from 'react-router' — NOT 'react-router-dom' (does not exist).
  */
 import { Routes, Route } from 'react-router';
+import AllPosts from './pages/allPosts';
+import AllAnonymousPosts from './pages/AllAnonymousPosts';
 
 // Public Pages
 import Home from '@/pages/Home';
@@ -71,6 +73,8 @@ export default function App() {
 				<Route path="anonim-yazilar" element={<AdminSubmissions />} />
 				<Route path="ayarlar" element={<AdminSettings />} />
 				<Route path="sohbet" element={<AdminChat />} />
+				<Route path="/yazilar" element={<AllPosts />} />
+				<Route path="/anonim-yazilar" element={<AllAnonymousPosts />} />
 			</Route>
 			
 			{/* 404 */}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router';
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/helpers';
 
@@ -11,15 +12,16 @@ import PostCard from '@/components/home/PostCard';
 import SectionTitle from '@/components/home/SectionTitle';
 import GalleryPreview from '@/components/home/GalleryPreview';
 import NewsletterSection from '@/components/home/NewsletterSection';
-import { FileText, Heart, Ghost } from 'lucide-react';
+import { FileText, Heart, Ghost, TrendingUp, ArrowRight } from 'lucide-react';
 
 export default function Home() {
   const [latestPosts, setLatestPosts] = useState<Post[]>([]);
   const [popularPosts, setPopularPosts] = useState<Post[]>([]);
+  const [mostReadPosts, setMostReadPosts] = useState<Post[]>([]);
   const [anonymousPosts, setAnonymousPosts] = useState<Post[]>([]);
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
-  const [loading, setLoading] = useState(true);
   const [commentCounts, setCommentCounts] = useState<Map<string, number>>(new Map());
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!supabase) {
@@ -36,13 +38,21 @@ export default function Home() {
       order('published_at', { ascending: false }).
       limit(6);
 
-      // Fetch popular posts
+      // Fetch popular posts (en beğenilenler)
       const { data: popular } = await supabase.
       from('posts').
       select('*').
       eq('status', 'published').
       order('like_count', { ascending: false }).
       limit(4);
+
+      // Fetch most read posts (en çok okunanlar)
+      const { data: mostRead } = await supabase.
+      from('posts').
+      select('*').
+      eq('status', 'published').
+      order('view_count', { ascending: false }).
+      limit(6);
 
       // Fetch anonymous posts
       const { data: anonymous } = await supabase.
@@ -60,16 +70,13 @@ export default function Home() {
       order('created_at', { ascending: false }).
       limit(4);
 
-      setLatestPosts(latest ?? []);
-      setPopularPosts(popular ?? []);
-      setAnonymousPosts(anonymous ?? []);
-      
-      // Yorum sayılarını hesapla
+      // Yorum sayılarını hesapla (tüm listelerdeki postlar için)
       const allPostIds = [
-        ...(latest ?? []).map((p) => p.id),
-        ...(popular ?? []).map((p) => p.id),
-        ...(anonymous ?? []).map((p) => p.id)
-      ];
+      ...(latest ?? []).map((p) => p.id),
+      ...(popular ?? []).map((p) => p.id),
+      ...(mostRead ?? []).map((p) => p.id),
+      ...(anonymous ?? []).map((p) => p.id)];
+
       const uniquePostIds = [...new Set(allPostIds)];
 
       if (uniquePostIds.length > 0) {
@@ -84,6 +91,11 @@ export default function Home() {
         });
         setCommentCounts(countMap);
       }
+
+      setLatestPosts(latest ?? []);
+      setPopularPosts(popular ?? []);
+      setMostReadPosts(mostRead ?? []);
+      setAnonymousPosts(anonymous ?? []);
       setGalleryImages(gallery ?? []);
       setLoading(false);
     };
@@ -99,31 +111,40 @@ export default function Home() {
 			{/* Latest Posts */}
 			<section data-ev-id="ev_4417681551" className="py-16 px-4">
 				<div data-ev-id="ev_37351734e1" className="max-w-7xl mx-auto">
-					<SectionTitle
-            icon={<FileText className="w-8 h-8 text-pine" />}
-            subtitle="En taze tahinli kabak yazıları burada">
+					<div className="flex items-center justify-between flex-wrap gap-4">
+						<SectionTitle
+              icon={<FileText className="w-8 h-8 text-pine" />}
+              subtitle="En taze tahinli kabak yazıları burada">
 
-						Son Yazılar
-					</SectionTitle>
+							Son Yazılar
+						</SectionTitle>
+						<Link
+              to="/yazilar"
+              className="flex items-center gap-2 px-4 py-2 bg-card hover:bg-muted rounded-xl text-sm font-medium text-foreground transition-colors shadow-soft mb-8">
+
+							Tüm Yazıları Gör
+							<ArrowRight className="w-4 h-4" />
+						</Link>
+					</div>
 
 					{loading ?
           <div data-ev-id="ev_d7f726e63c" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-							{[...Array(6)].map((_, i) =>
+						{[...Array(6)].map((_, i) =>
             <div data-ev-id="ev_cac9ca4c5f" key={i} className="bg-card rounded-2xl h-72 animate-pulse" />
             )}
-						</div> :
+					</div> :
           latestPosts.length > 0 ?
           <div data-ev-id="ev_3f8e84e1c6" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-							{latestPosts.map((post, index) =>
+						{latestPosts.map((post, index) =>
             <PostCard
               key={post.id}
               post={post}
               index={index}
-              variant={index === 0 ? 'featured' : 'default'} 
-              commentCount={commentCounts.get(post.id) ?? 0}/>
+              variant={index === 0 ? 'featured' : 'default'}
+              commentCount={commentCounts.get(post.id) ?? 0} />
 
             )}
-						</div> :
+					</div> :
 
           <EmptyState
             message="Henüz yazı yok. İlk yazı için sabırsızlanıyoruz!"
@@ -133,8 +154,39 @@ export default function Home() {
 				</div>
 			</section>
 
+			{/* Most Read Posts */}
+			<section className="py-16 px-4 bg-cream-dark">
+				<div className="max-w-7xl mx-auto">
+					<SectionTitle
+            icon={<TrendingUp className="w-8 h-8 text-olive" />}
+            subtitle="Herkesin tıkladığı, herkesin okuduğu yazılar">
+
+						En Çok Okunanlar
+					</SectionTitle>
+
+					{loading ?
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+						{[...Array(6)].map((_, i) =>
+            <div key={i} className="bg-card rounded-2xl h-56 animate-pulse" />
+            )}
+					</div> :
+          mostReadPosts.length > 0 ?
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+						{mostReadPosts.map((post, index) =>
+            <PostCard key={post.id} post={post} index={index} commentCount={commentCounts.get(post.id) ?? 0} />
+            )}
+					</div> :
+
+          <EmptyState
+            message="Henüz okunma verisi yok. İlk yazıyı sen oku!"
+            emoji="👀" />
+
+          }
+				</div>
+			</section>
+
 			{/* Popular Posts */}
-			<section data-ev-id="ev_3c62ab59db" className="py-16 px-4 bg-cream-dark">
+			<section data-ev-id="ev_3c62ab59db" className="py-16 px-4">
 				<div data-ev-id="ev_930e670ea1" className="max-w-7xl mx-auto">
 					<SectionTitle
             icon={<Heart className="w-8 h-8 text-pumpkin" />}
@@ -145,17 +197,16 @@ export default function Home() {
 
 					{loading ?
           <div data-ev-id="ev_8692d13e60" className="grid grid-cols-1 md:grid-cols-2 gap-6">
-							{[...Array(4)].map((_, i) =>
+						{[...Array(4)].map((_, i) =>
             <div data-ev-id="ev_46bac6c3ad" key={i} className="bg-card rounded-2xl h-48 animate-pulse" />
             )}
-						</div> :
+					</div> :
           popularPosts.length > 0 ?
           <div data-ev-id="ev_b2a2e766d2" className="grid grid-cols-1 md:grid-cols-2 gap-6">
-							{popularPosts.map((post, index) =>
-            <PostCard key={post.id} post={post} index={index}
-            commentCount={commentCounts.get(post.id) ?? 0} />
+						{popularPosts.map((post, index) =>
+            <PostCard key={post.id} post={post} index={index} commentCount={commentCounts.get(post.id) ?? 0} />
             )}
-						</div> :
+					</div> :
 
           <EmptyState
             message="Henüz beğenilen yazı yok. İlk beğeniyi sen koy!"
@@ -166,28 +217,36 @@ export default function Home() {
 			</section>
 
 			{/* Anonymous Posts */}
-			<section data-ev-id="ev_70d9042373" className="py-16 px-4">
+			<section data-ev-id="ev_70d9042373" className="py-16 px-4 bg-cream-dark">
 				<div data-ev-id="ev_1a1058e824" className="max-w-7xl mx-auto">
-					<SectionTitle
-            icon={<Ghost className="w-8 h-8 text-muted-foreground" />}
-            subtitle="Kimliği meçhul, hikayesi gerçek">
+					<div className="flex items-center justify-between flex-wrap gap-4">
+						<SectionTitle
+              icon={<Ghost className="w-8 h-8 text-muted-foreground" />}
+              subtitle="Kimliği meçhul, hikayesi gerçek">
 
-						Anonim Yazılar
-					</SectionTitle>
+							Anonim Yazılar
+						</SectionTitle>
+						<Link
+              to="/anonim-yazilar"
+              className="flex items-center gap-2 px-4 py-2 bg-card hover:bg-muted rounded-xl text-sm font-medium text-foreground transition-colors shadow-soft mb-8">
+
+							Tüm Anonim Yazıları Gör
+							<ArrowRight className="w-4 h-4" />
+						</Link>
+					</div>
 
 					{loading ?
           <div data-ev-id="ev_4748511449" className="grid grid-cols-1 md:grid-cols-3 gap-6">
-							{[...Array(3)].map((_, i) =>
+						{[...Array(3)].map((_, i) =>
             <div data-ev-id="ev_b6439324c3" key={i} className="bg-card rounded-2xl h-48 animate-pulse" />
             )}
-						</div> :
+					</div> :
           anonymousPosts.length > 0 ?
           <div data-ev-id="ev_5e10f033f6" className="grid grid-cols-1 md:grid-cols-3 gap-6">
-							{anonymousPosts.map((post, index) =>
-            <PostCard key={post.id} post={post} index={index}
-            commentCount={commentCounts.get(post.id) ?? 0} />
+						{anonymousPosts.map((post, index) =>
+            <PostCard key={post.id} post={post} index={index} commentCount={commentCounts.get(post.id) ?? 0} />
             )}
-						</div> :
+					</div> :
 
           <EmptyState
             message="Henüz kimse laf atmamış. İlk sen ol!"
@@ -218,7 +277,6 @@ function EmptyState({
 
 
 
-
 }: {message: string;emoji: string;actionLink?: string;actionLabel?: string;}) {
   return (
     <motion.div
@@ -234,8 +292,8 @@ function EmptyState({
       href={actionLink}
       className="inline-flex items-center gap-2 px-5 py-2.5 bg-pumpkin hover:bg-pumpkin-dark text-white font-medium rounded-xl transition-colors">
 
-					{actionLabel}
-				</a>
+				{actionLabel}
+			</a>
       }
 		</motion.div>);
 
