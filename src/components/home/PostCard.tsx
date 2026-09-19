@@ -135,16 +135,16 @@ export default function PostCard({ post, variant = 'default', index = 0, comment
 							<Heart className="w-3.5 h-3.5" />
 							{post.like_count}
 						</span>
-						<span data-ev-id="ev_455862e420" className="flex items-center gap-1">
-							<Eye className="w-3.5 h-3.5" />
-							{post.view_count}
-						</span>
             {commentCount !== undefined && (
 							<span className="flex items-center gap-1">
 								<MessageCircle className="w-3.5 h-3.5" />
 								{commentCount}
 							</span>
             )}
+						<span data-ev-id="ev_455862e420" className="flex items-center gap-1">
+							<Eye className="w-3.5 h-3.5" />
+							{post.view_count}
+						</span>
 					</div>
 
 					{/* Date */}

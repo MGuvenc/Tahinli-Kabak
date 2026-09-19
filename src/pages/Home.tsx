@@ -118,9 +118,9 @@ export default function Home() {
             <PostCard
               key={post.id}
               post={post}
-              commentCount={commentCounts.get(post.id) ?? 0}
               index={index}
-              variant={index === 0 ? 'featured' : 'default'} />
+              variant={index === 0 ? 'featured' : 'default'} 
+              commentCount={commentCounts.get(post.id) ?? 0}/>
 
             )}
 						</div> :
@@ -152,7 +152,8 @@ export default function Home() {
           popularPosts.length > 0 ?
           <div data-ev-id="ev_b2a2e766d2" className="grid grid-cols-1 md:grid-cols-2 gap-6">
 							{popularPosts.map((post, index) =>
-            <PostCard key={post.id} post={post} commentCount={commentCounts.get(post.id) ?? 0} index={index} />
+            <PostCard key={post.id} post={post} index={index}
+            commentCount={commentCounts.get(post.id) ?? 0} />
             )}
 						</div> :
 
@@ -183,7 +184,8 @@ export default function Home() {
           anonymousPosts.length > 0 ?
           <div data-ev-id="ev_5e10f033f6" className="grid grid-cols-1 md:grid-cols-3 gap-6">
 							{anonymousPosts.map((post, index) =>
-            <PostCard key={post.id} post={post} commentCount={commentCounts.get(post.id) ?? 0} index={index} />
+            <PostCard key={post.id} post={post} index={index}
+            commentCount={commentCounts.get(post.id) ?? 0} />
             )}
 						</div> :
 
