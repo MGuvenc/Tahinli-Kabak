@@ -6,7 +6,7 @@
  * - Import from 'react-router' — NOT 'react-router-dom' (does not exist).
  */
 import { Routes, Route } from 'react-router';
-import AllPosts from '@/pages/AllPosts';
+import AllPosts from '@/pages/allPosts';
 import AllAnonymousPosts from '@/pages/AllAnonymousPosts';
 
 // Public Pages
