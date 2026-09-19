@@ -9,6 +9,7 @@ import { Routes, Route } from 'react-router';
 import AllPosts from '@/pages/AllPosts';
 import AllAnonymousPosts from '@/pages/AllAnonymousPosts';
 import ScrollToTop from './components/ui/Scrolltotop';
+import ScrollToTopOnRouteChange from './components/utils/ScrollToTopOnRouteChange';
 
 // Public Pages
 import Home from '@/pages/Home';
@@ -43,6 +44,7 @@ import ProtectedRoute from '@/components/auth/ProtectedRoute';
 export default function App() {
 	return (
 		<>
+			<ScrollToTopOnRouteChange />
 			<ScrollToTop />
 			<Routes>
 				{/* Public Routes */}
