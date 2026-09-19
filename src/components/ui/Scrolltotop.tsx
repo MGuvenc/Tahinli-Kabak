@@ -1,21 +1,35 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUp } from 'lucide-react';
 
 export default function ScrollToTop() {
 	const [visible, setVisible] = useState(false);
+	const { pathname } = useLocation();
 
+	// Route değiştiğinde sayfanın en üstüne çık
+	useEffect(() => {
+		window.scrollTo(0, 0);
+	}, [pathname]);
+
+	// Yukarı çık butonunun görünürlüğü
 	useEffect(() => {
 		const handleScroll = () => {
 			setVisible(window.scrollY > 400);
 		};
 
 		window.addEventListener('scroll', handleScroll);
-		return () => window.removeEventListener('scroll', handleScroll);
+
+		return () => {
+			window.removeEventListener('scroll', handleScroll);
+		};
 	}, []);
 
 	const scrollToTop = () => {
-		window.scrollTo({ top: 0, behavior: 'smooth' });
+		window.scrollTo({
+			top: 0,
+			behavior: 'smooth',
+		});
 	};
 
 	return (
