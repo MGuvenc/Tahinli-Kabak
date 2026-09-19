@@ -8,6 +8,7 @@
 import { Routes, Route } from 'react-router';
 import AllPosts from '@/pages/AllPosts';
 import AllAnonymousPosts from '@/pages/AllAnonymousPosts';
+import ScrollToTop from './components/ui/Scrolltotop';
 
 // Public Pages
 import Home from '@/pages/Home';
@@ -41,44 +42,47 @@ import ProtectedRoute from '@/components/auth/ProtectedRoute';
 
 export default function App() {
 	return (
-		<Routes>
-			{/* Public Routes */}
-			<Route element={<PublicLayout />}>
-				<Route path="/" element={<Home />} />
-				<Route path="/hakkimda" element={<About />} />
-				<Route path="/yazi/:slug" element={<PostDetail />} />
-				<Route path="/galeri" element={<Gallery />} />
-				<Route path="/anonim-yazi-gonder" element={<SubmitAnonymous />} />
-				<Route path="/etiket/:slug" element={<TagPosts />} />
-				<Route path="/ara" element={<Search />} />
-				<Route path="/site-haritasi" element={<Sitemap />} />
-				<Route path="/sohbet" element={<Chat />} />
-				<Route path="/yazilar" element={<AllPosts />} />
-				<Route path="/anonim-yazilar" element={<AllAnonymousPosts />} />
-			</Route>
-			
-			{/* Admin Auth */}
-			<Route path="/admin/giris" element={<AdminLogin />} />
-			
-			{/* Admin Routes - Protected */}
-			<Route path="/admin" element={
-				<ProtectedRoute>
-					<AdminLayout />
-				</ProtectedRoute>
-			}>
-				<Route index element={<AdminDashboard />} />
-				<Route path="yazilar" element={<AdminPosts />} />
-				<Route path="yazilar/yeni" element={<AdminPostEditor />} />
-				<Route path="yazilar/:id" element={<AdminPostEditor />} />
-				<Route path="galeri" element={<AdminGallery />} />
-				<Route path="yorumlar" element={<AdminComments />} />
-				<Route path="anonim-yazilar" element={<AdminSubmissions />} />
-				<Route path="ayarlar" element={<AdminSettings />} />
-				<Route path="sohbet" element={<AdminChat />} />
-			</Route>
-			
-			{/* 404 */}
-			<Route path="*" element={<NotFound />} />
-		</Routes>
+		<>
+			<ScrollToTop />
+			<Routes>
+				{/* Public Routes */}
+				<Route element={<PublicLayout />}>
+					<Route path="/" element={<Home />} />
+					<Route path="/hakkimda" element={<About />} />
+					<Route path="/yazi/:slug" element={<PostDetail />} />
+					<Route path="/galeri" element={<Gallery />} />
+					<Route path="/anonim-yazi-gonder" element={<SubmitAnonymous />} />
+					<Route path="/etiket/:slug" element={<TagPosts />} />
+					<Route path="/ara" element={<Search />} />
+					<Route path="/site-haritasi" element={<Sitemap />} />
+					<Route path="/sohbet" element={<Chat />} />
+					<Route path="/yazilar" element={<AllPosts />} />
+					<Route path="/anonim-yazilar" element={<AllAnonymousPosts />} />
+				</Route>
+				
+				{/* Admin Auth */}
+				<Route path="/admin/giris" element={<AdminLogin />} />
+				
+				{/* Admin Routes - Protected */}
+				<Route path="/admin" element={
+					<ProtectedRoute>
+						<AdminLayout />
+					</ProtectedRoute>
+				}>
+					<Route index element={<AdminDashboard />} />
+					<Route path="yazilar" element={<AdminPosts />} />
+					<Route path="yazilar/yeni" element={<AdminPostEditor />} />
+					<Route path="yazilar/:id" element={<AdminPostEditor />} />
+					<Route path="galeri" element={<AdminGallery />} />
+					<Route path="yorumlar" element={<AdminComments />} />
+					<Route path="anonim-yazilar" element={<AdminSubmissions />} />
+					<Route path="ayarlar" element={<AdminSettings />} />
+					<Route path="sohbet" element={<AdminChat />} />
+				</Route>
+				
+				{/* 404 */}
+				<Route path="*" element={<NotFound />} />
+			</Routes>
+		</>
 	);
 }
