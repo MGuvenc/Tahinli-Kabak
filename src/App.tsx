@@ -53,6 +53,8 @@ export default function App() {
 				<Route path="/ara" element={<Search />} />
 				<Route path="/site-haritasi" element={<Sitemap />} />
 				<Route path="/sohbet" element={<Chat />} />
+				<Route path="/yazilar" element={<AllPosts />} />
+				<Route path="/anonim-yazilar" element={<AllAnonymousPosts />} />
 			</Route>
 			
 			{/* Admin Auth */}
@@ -73,8 +75,6 @@ export default function App() {
 				<Route path="anonim-yazilar" element={<AdminSubmissions />} />
 				<Route path="ayarlar" element={<AdminSettings />} />
 				<Route path="sohbet" element={<AdminChat />} />
-				<Route path="/yazilar" element={<AllPosts />} />
-				<Route path="/anonim-yazilar" element={<AllAnonymousPosts />} />
 			</Route>
 			
 			{/* 404 */}
