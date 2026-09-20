@@ -12,7 +12,7 @@ interface ImageUploadProps {
 }
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-const MAX_SIZE = 25 * 1024 * 1024; // 5MB
+const MAX_SIZE = 50 * 1024 * 1024; // 5MB
 
 export default function ImageUpload({ value, onChange, onRemove, folder = 'uploads', className = '' }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
@@ -34,7 +34,7 @@ export default function ImageUpload({ value, onChange, onRemove, folder = 'uploa
 
     // Validate file size
     if (file.size > MAX_SIZE) {
-      setError('Dosya boyutu en fazla 25MB olabilir.');
+      setError('Dosya boyutu en fazla 50MB olabilir.');
       return;
     }
 
@@ -171,7 +171,7 @@ export default function ImageUpload({ value, onChange, onRemove, folder = 'uploa
                 </p>
               </div>
               <p data-ev-id="ev_3f96c9288e" className="text-xs text-muted-foreground">
-                JPG, PNG, GIF • Maks. 25MB
+                JPG, PNG, GIF • Maks. 50MB
               </p>
             </div>
         }

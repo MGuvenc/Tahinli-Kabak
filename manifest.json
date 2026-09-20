@@ -1,0 +1,16 @@
+{
+	"name": "tahinlikabak",
+	"short_name": "tahinlikabak",
+	"start_url": "/admin",
+	"display": "standalone",
+	"background_color": "#FFFAF5",
+	"theme_color": "#E67E22",
+	"icons": [
+		{
+			"src": "/favicon.svg",
+			"sizes": "any",
+			"type": "image/svg+xml",
+			"purpose": "any"
+		}
+	]
+}

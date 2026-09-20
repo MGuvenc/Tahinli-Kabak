@@ -8,7 +8,7 @@ const CHAT_USERNAME_KEY = 'tahinlikabak_chat_username';
 const MAX_MESSAGE_LENGTH = 500;
 const MAX_USERNAME_LENGTH = 24;
 const SEND_COOLDOWN_MS = 3000;
-const MAX_IMAGE_SIZE_MB = 25;
+const MAX_IMAGE_SIZE_MB = 50;
 const PAGE_SIZE = 100;
 
 interface ChatMessage {
