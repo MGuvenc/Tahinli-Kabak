@@ -12,7 +12,7 @@ interface ImageUploadProps {
 }
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_SIZE = 25 * 1024 * 1024; // 5MB
 
 export default function ImageUpload({ value, onChange, onRemove, folder = 'uploads', className = '' }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
