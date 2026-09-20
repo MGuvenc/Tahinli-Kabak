@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/helpers';
 import { useAuth } from '@/hooks/useAuth';
 import ImageUpload from '@/components/ui/ImageUpload';
+import PushNotificationSetup from '@/components/admin/PushNotificationSetup.';
 
 type SiteSetting = Tables<'site_settings'>;
 
@@ -411,6 +412,20 @@ export default function AdminSettings() {
           </button>
         </motion.div>
 
+        {/* Push Notifications */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="bg-card rounded-xl p-6 shadow-soft">
+
+          <h2 className="font-display text-lg font-bold text-pine mb-2">Bildirimler</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Yeni anonim yazı, yorum veya sohbet mesajı geldiğinde bu cihaza push bildirimi gönderilsin.
+          </p>
+          <PushNotificationSetup />
+        </motion.div>
+        
         {/* Info Card */}
         <div data-ev-id="ev_6b26b4e1f2" className="bg-pumpkin/10 rounded-xl p-6">
           <h3 data-ev-id="ev_eb5bb1f887" className="font-display font-bold text-pine mb-2">🎃 İpucu</h3>
