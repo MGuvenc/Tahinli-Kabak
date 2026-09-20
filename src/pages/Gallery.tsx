@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/helpers';
+import { useLocation } from 'react-router';
 
 type GalleryImage = Tables<'gallery_images'>;
 
@@ -10,6 +11,7 @@ export default function Gallery() {
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const location = useLocation();
 
   useEffect(() => {
     if (!supabase) {
@@ -25,6 +27,11 @@ export default function Gallery() {
 
       setImages(data ?? []);
       setLoading(false);
+
+      const openIndex = (location.state as { openIndex?: number } | null)?.openIndex;
+      if (typeof openIndex === 'number' && data && data[openIndex]) {
+        setSelectedIndex(openIndex);
+      }
     };
 
     fetchGallery();
@@ -152,7 +159,7 @@ export default function Gallery() {
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           onClick={(e) => e.stopPropagation()}
-          className="relative max-w-5xl max-h-[85vh] w-full mx-4">
+          className="relative max-w-5xl h-[85vh] w-full mx-4">
 
               <img data-ev-id="ev_607e756f32"
             src={images[selectedIndex].image_url}

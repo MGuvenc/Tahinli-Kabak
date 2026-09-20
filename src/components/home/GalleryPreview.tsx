@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { motion } from 'framer-motion';
 import { ArrowRight, Images } from 'lucide-react';
 import SectionTitle from './SectionTitle';
@@ -15,6 +15,7 @@ interface GalleryPreviewProps {
 }
 
 export default function GalleryPreview({ images }: GalleryPreviewProps) {
+  const navigate = useNavigate();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   if (images.length === 0) {
@@ -57,6 +58,7 @@ export default function GalleryPreview({ images }: GalleryPreviewProps) {
             transition={{ delay: index * 0.1 }}
             onMouseEnter={() => setHoveredIndex(index)}
             onMouseLeave={() => setHoveredIndex(null)}
+            onClick={() => navigate('/galeri', {state: {openIndex: index } })}
             className="relative aspect-square rounded-2xl overflow-hidden group">
 
 							<motion.img
