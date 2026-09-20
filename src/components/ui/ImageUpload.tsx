@@ -34,7 +34,7 @@ export default function ImageUpload({ value, onChange, onRemove, folder = 'uploa
 
     // Validate file size
     if (file.size > MAX_SIZE) {
-      setError('Dosya boyutu en fazla 5MB olabilir.');
+      setError('Dosya boyutu en fazla 25MB olabilir.');
       return;
     }
 
@@ -171,7 +171,7 @@ export default function ImageUpload({ value, onChange, onRemove, folder = 'uploa
                 </p>
               </div>
               <p data-ev-id="ev_3f96c9288e" className="text-xs text-muted-foreground">
-                JPG, PNG, GIF • Maks. 5MB
+                JPG, PNG, GIF • Maks. 25MB
               </p>
             </div>
         }
